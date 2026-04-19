@@ -1,27 +1,33 @@
-name: "Godot APK Build"
-on: 
-  workflow_dispatch: # Allows manual trigger from the Actions tab
+name: Free APK Build
+on: workflow_dispatch
 
 jobs:
-  export-android:
-    name: Build Godot APK
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source
         uses: actions/checkout@v4
         with:
           repository: JaxL9/TAP-A-Cusor
-          path: godot-project
+          path: my-app
 
-      - name: Godot Android Export
-        uses: dulvui/godot-android-export@v4.0.0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          working-directory: godot-project
-          # Matches typical Godot 4.x versions
-          godot-version: 4.2.1 
+          node-version: 18
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
         with:
-          name: TAP-A-Cusor-APK
-          path: godot-project/**/*.apk
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Install Dependencies
+        run: |
+          cd my-app
+          npm install
+
+      - name: Build Android APK
+        uses: ni554n/apk-builder-action@v2
+        with:
+          root-directory: ./my-app
