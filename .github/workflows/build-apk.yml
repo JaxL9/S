@@ -1,33 +1,34 @@
-name: Free APK Build
+name: Build OnSpace APK
 on: workflow_dispatch
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Source
+      - name: Checkout Code
         uses: actions/checkout@v4
         with:
           repository: JaxL9/TAP-A-Cusor
-          path: my-app
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
+          path: app-folder
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: 'temurin'
           java-version: '17'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
 
       - name: Install Dependencies
         run: |
-          cd my-app
-          npm install
+          cd app-folder
+          npm install --force
 
-      - name: Build Android APK
-        uses: ni554n/apk-builder-action@v2
+      - name: Build APK
+        # Changed @v2 to @main to fix "unable to install" error
+        uses: ni554n/apk-builder-action@main 
         with:
-          root-directory: ./my-app
+          root-directory: ./app-folder
