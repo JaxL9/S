@@ -1,41 +1,35 @@
-
-name: Build APK
+name: Build APK from ZIP
 on: workflow_dispatch
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Source
+      - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          repository: JaxL9/TAP-A-Cusor
-          path: my-app
 
-      - name: Setup Java
+      - name: Extract Project
+        run: unzip project.zip -d my-app
+
+      - name: Setup Java & Node
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
+      
       - name: Install Dependencies
         run: |
           cd my-app
           npm install --force
 
-      - name: Build with Gradle
+      - name: Build APK
         run: |
           cd my-app/android
           chmod +x gradlew
           ./gradlew assembleDebug
 
-      - name: Upload APK
+      - name: Upload Finished APK
         uses: actions/upload-artifact@v4
         with:
-          name: App-Debug-APK
+          name: OnSpace-App-APK
           path: my-app/android/app/build/outputs/apk/debug/*.apk
