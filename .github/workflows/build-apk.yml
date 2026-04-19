@@ -1,15 +1,16 @@
-name: Manual Gradle Build
+
+name: Build APK
 on: workflow_dispatch
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
+      - name: Checkout Source
         uses: actions/checkout@v4
         with:
           repository: JaxL9/TAP-A-Cusor
-          path: app-folder
+          path: my-app
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -17,14 +18,24 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: |
+          cd my-app
+          npm install --force
+
       - name: Build with Gradle
         run: |
-          cd app-folder/android # Most OnSpace projects put the android code here
+          cd my-app/android
           chmod +x gradlew
           ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: my-app-apk
-          path: app-folder/android/app/build/outputs/apk/debug/*.apk
+          name: App-Debug-APK
+          path: my-app/android/app/build/outputs/apk/debug/*.apk
